@@ -1,10 +1,8 @@
 services:
-  app:
+  api:
     build:
       dockerfile: Dockerfile
       context: .
-    ports:
-      - "3000:3000"
     develop:
       watch:
         - action: rebuild
@@ -14,3 +12,5 @@ services:
             - ./**/*.go
             - ./go.mod
             - ./go.sum
+    ports:
+      - 3000:3000
