@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/middleware"
@@ -15,8 +17,13 @@ func main() {
 	r.Use(middleware.Recoverer)
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "text/html")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "Hello World!")
+		tmpl := template.Must(template.ParseFiles("templates/index.html"))
+		err := tmpl.Execute(w, nil)
+		if err != nil {
+			log.Fatalf("Cound not load index.html")
+		}
 	})
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
