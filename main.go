@@ -5,12 +5,17 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 )
 
 func main() {
+	handleSigTerms()
+
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)
@@ -31,5 +36,17 @@ func main() {
 		fmt.Fprint(w, "Healthy")
 	})
 
+	fmt.Printf("Server starting on port 3000")
+
 	http.ListenAndServe(":3000", r)
+}
+
+func handleSigTerms() {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		fmt.Println("received SIGTERM, exiting")
+		os.Exit(1)
+	}()
 }
