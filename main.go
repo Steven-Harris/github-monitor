@@ -8,20 +8,12 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-
-	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/chi/v5"
 )
 
 func main() {
 	handleSigTerms()
 
-	r := chi.NewRouter()
-	r.Use(middleware.RequestID)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "text/html")
 		w.WriteHeader(http.StatusOK)
 		tmpl := template.Must(template.ParseFiles("templates/index.html"))
@@ -31,16 +23,14 @@ func main() {
 		}
 	})
 
-	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, "Healthy")
 	})
 
 	fmt.Printf("Server starting on port 8888")
 
-	if err := http.ListenAndServe(":8888", r); err != nil {
-		log.Fatal(err)
-	}
+	log.Fatal(http.ListenAndServe(":8888", nil))
 }
 
 func handleSigTerms() {
