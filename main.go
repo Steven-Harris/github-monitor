@@ -27,7 +27,7 @@ func main() {
 		tmpl := template.Must(template.ParseFiles("templates/index.html"))
 		err := tmpl.Execute(w, nil)
 		if err != nil {
-			log.Fatalf("Cound not load index.html")
+			log.Fatalf("Could not load index.html")
 		}
 	})
 
@@ -36,9 +36,11 @@ func main() {
 		fmt.Fprint(w, "Healthy")
 	})
 
-	fmt.Printf("Server starting on port 3000")
+	fmt.Printf("Server starting on port 8888")
 
-	http.ListenAndServe(":3000", r)
+	if err := http.ListenAndServe(":8888", r); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func handleSigTerms() {
