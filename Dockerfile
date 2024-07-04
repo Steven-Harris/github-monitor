@@ -6,9 +6,9 @@ COPY . .
 
 RUN go get -v -t -d ./...
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -o main 
 
 FROM scratch as app
-COPY --from=base /app/main main
+COPY --from=base /app .
 EXPOSE ${PORT}
-ENTRYPOINT [ "main" ]
+ENTRYPOINT [ "/main" ]
