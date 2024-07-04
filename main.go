@@ -25,7 +25,7 @@ func main() {
 		w.Header().Add("Content-Type", "text/html")
 		w.WriteHeader(http.StatusOK)
 		tmpl := template.Must(template.ParseFiles("templates/index.html"))
-		err := tmpl.Execute(w, nil)
+		err := tmpl.Execute(w, data)
 		if err != nil {
 			log.Fatalf("Could not load index.html")
 		}

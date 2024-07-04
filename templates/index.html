@@ -11,6 +11,15 @@
 <body>
     <main>
         <h1>Hello World!</h1>
+        <ul>
+            {{ block "Items" .}}
+            {{ range .}}
+            <li>
+                {{.Name}}
+            </li>
+            {{ end }}
+            {{ end }}
+        </ul>
     </main>
 </body>
 
