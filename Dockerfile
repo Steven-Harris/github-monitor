@@ -1,4 +1,4 @@
-FROM golang:1.22.5
+FROM golang:1.22.5 as base
 
 WORKDIR /app
 
@@ -8,6 +8,7 @@ RUN go get -v -t -d ./...
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 
-EXPOSE 3000
-
-CMD ["/app/main"]
+FROM scratch as app
+COPY --from=base /app/main main
+EXPOSE ${PORT}
+ENTRYPOINT [ "main" ]
