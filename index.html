@@ -4,23 +4,29 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
     <title>Github Monitor</title>
 </head>
 
 <body>
     <main>
-        <h1>Hello World!</h1>
+        <h1>Github Monitor</h1>
+
+        <h3>Pull Requests</h3>
+
         <ul>
-            {{ block "Items" .}}
+            {{ block "pull-requests" .}}
             {{ range .}}
             <li>
-                {{.Name}}
+                {{.Title}}
             </li>
             {{ end }}
             {{ end }}
         </ul>
     </main>
+    <script>
+        htmx.logAll();
+    </script>
 </body>
 
 </html>

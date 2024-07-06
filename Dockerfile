@@ -10,5 +10,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o main
 
 FROM scratch as app
 COPY --from=base /app .
-EXPOSE ${PORT}
+EXPOSE 8888
 ENTRYPOINT [ "/main" ]
