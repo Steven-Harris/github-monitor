@@ -21,7 +21,7 @@ func main() {
 		tmpl := template.Must(template.ParseFiles("index.html"))
 		data, err := api.GetPullRequests()
 		if err != nil {
-			log.Fatalf("Cloud not fetch data: %s\n", err)
+			log.Fatalf("Could not fetch data: %s\n", err)
 		}
 
 		err = tmpl.Execute(w, data)
