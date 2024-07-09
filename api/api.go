@@ -2,32 +2,28 @@ package api
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 )
 
-const pullRequestsApi = "https://api.github.com/repos/%s/pulls?state=open"
+func (gh *ghHttpClient) GetPullRequests() ([]PullRequest, error) {
 
-func GetPullRequests() ([]PullRequest, error) {
-
-	token, repos, err := GetConfig()
+	repos, err := GetRepos()
 	if err != nil {
 		return nil, err
 	}
 
 	pullRequests := make([]PullRequest, 0)
 	for _, repo := range repos {
-		url := fmt.Sprintf(pullRequestsApi, repo)
 
-		body, err := GithubGet(url, token)
+		body, err := gh.Pulls(repo)
 		if err != nil {
-			return nil, fmt.Errorf("error making request to get pull requests: %s\n", err)
+			return nil, fmt.Errorf("error making request to get pull requests: %s", err)
 		}
 
 		var repoPulls []PullRequest
 		err = json.Unmarshal(body, &repoPulls)
 		if err != nil {
-			return nil, errors.New("error mapping response into object")
+			return nil, fmt.Errorf("error mapping response into object: %s", err)
 		}
 
 		pullRequests = append(pullRequests, repoPulls...)

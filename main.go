@@ -15,11 +15,17 @@ import (
 func main() {
 	handleSigTerms()
 
+	client, err := api.NewGitHubHttpClient()
+	if err != nil {
+		log.Fatalf("Could not create github http client: %s\n", err)
+		os.Exit(1)
+	}
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "text/html")
 		w.WriteHeader(http.StatusOK)
 		tmpl := template.Must(template.ParseFiles("index.html"))
-		data, err := api.GetPullRequests()
+		data, err := client.GetPullRequests()
 		if err != nil {
 			log.Fatalf("Could not fetch data: %s\n", err)
 		}

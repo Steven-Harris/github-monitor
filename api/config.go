@@ -6,17 +6,18 @@ import (
 	"strings"
 )
 
-func GetConfig() (token string, repos []string, err error) {
+func GetToken() (string, error) {
 	t := os.Getenv("GITHUB_TOKEN")
 	if t == "" {
-		return "", nil, errors.New("GITHUB_TOKEN not found")
+		return "", errors.New("GITHUB_TOKEN not found")
 	}
+	return t, nil
+}
 
+func GetRepos() ([]string, error) {
 	r := os.Getenv("GITHUB_REPOS")
 	if r == "" {
-		return "", nil, errors.New("GITHUB_REPOS not found")
+		return nil, errors.New("GITHUB_REPOS not found")
 	}
-	rA := strings.Split(r, ",")
-
-	return t, rA, nil
+	return strings.Split(r, ","), nil
 }
