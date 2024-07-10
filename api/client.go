@@ -81,3 +81,39 @@ func (c *ghHttpClient) Pulls(repo string) ([]byte, error) {
 		return nil, fmt.Errorf("something happened: %s", res.Status)
 	}
 }
+
+func (c *ghHttpClient) Runs(repo string) ([]byte, error) {
+	rel := &url.URL{Path: fmt.Sprintf("%s/actions/runs", repo)}
+	uri := c.baseUri.ResolveReference(rel)
+	req, err := http.NewRequest(http.MethodGet, uri.String(), nil)
+	if err != nil {
+		return nil, errors.New("could not build request")
+	}
+
+	req.Header.Add("Accept", "application/vnd.github+json")
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.token))
+	req.Header.Add("X-Github-Api-Version", githubApiVersion)
+
+	res, err := c.client.Do(req)
+	if err != nil {
+		return nil, errors.New("could not connect to Github")
+	}
+
+	switch res.StatusCode {
+	case http.StatusNotFound, http.StatusInternalServerError:
+		{
+			return nil, fmt.Errorf("url not found: %s", uri.String())
+		}
+	case http.StatusOK:
+		{
+			body, err := io.ReadAll(res.Body)
+			if err != nil {
+				return nil, errors.New("could not read response body from Github Api")
+			}
+
+			return body, nil
+		}
+	default:
+		return nil, fmt.Errorf("something happened: %s", res.Status)
+	}
+}
