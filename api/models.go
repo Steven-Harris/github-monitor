@@ -166,6 +166,7 @@ type PullRequest struct {
 	AutoMerge          any             `json:"auto_merge"`
 	ActiveLockReason   any             `json:"active_lock_reason"`
 }
+
 type WorkflowRuns struct {
 	ID               int        `json:"id"`
 	Name             string     `json:"name"`
@@ -310,6 +311,7 @@ type WorkflowRuns struct {
 		DeploymentsURL   string     `json:"deployments_url"`
 	} `json:"head_repository"`
 }
+
 type Runs struct {
 	TotalCount   int            `json:"total_count"`
 	WorkflowRuns []WorkflowRuns `json:"workflow_runs"`

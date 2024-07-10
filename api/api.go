@@ -42,18 +42,18 @@ func (gh *ghHttpClient) GetActions() ([]Runs, error) {
 	runs := make([]Runs, 0)
 	for _, repo := range repos {
 
-		body, err := gh.Pulls(repo)
+		body, err := gh.Runs(repo)
 		if err != nil {
 			return nil, fmt.Errorf("error making request to get runs: %s", err)
 		}
 
-		var repoRuns []Runs
-		err = json.Unmarshal(body, &repoRuns)
+		var repoRun Runs
+		err = json.Unmarshal(body, &repoRun)
 		if err != nil {
 			return nil, fmt.Errorf("error mapping response into object: %s", err)
 		}
 
-		runs = append(runs, repoRuns...)
+		runs = append(runs, repoRun)
 	}
 
 	return runs, nil

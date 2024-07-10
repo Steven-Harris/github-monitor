@@ -46,6 +46,31 @@ func main() {
 		}
 	})
 
+	http.HandleFunc("/actions", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "text/html")
+		tmpl, err := template.ParseFiles("html/actions.html")
+		if err != nil {
+			log.Printf("Error parsing template: %s\n", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		data, err := client.GetActions()
+		if err != nil {
+			log.Printf("Could not fetch data: %s\n", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		err = tmpl.Execute(w, data)
+		if err != nil {
+			log.Printf("Error executing template: %s\n", err)
+			// It's too late to change the HTTP status code here if you've already written to w.
+			// In a real scenario, consider logging the error or sending it to a monitoring system.
+			return
+		}
+	})
+
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, "Healthy")

@@ -1,0 +1,8 @@
+<h3>Actions</h3>
+{{ range . }}
+<ul>
+    {{ range .WorkflowRuns }}
+    <li>{{ .Name}}</li>
+    {{ end }}
+</ul>
+{{ end }}

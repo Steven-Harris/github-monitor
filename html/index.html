@@ -11,7 +11,12 @@
 <body>
     <main>
         <h1>Github Monitor</h1>
-        <div hx-get="/pulls" hx-trigger="load" hx-swap="outerHTML"></div>
+        <div hx-get="/pulls" hx-trigger="load" hx-swap="outerHTML">
+            Loading Pull Requests...
+        </div>
+        <div hx-get="/actions" hx-trigger="load" hx-swap="outerHTML">
+            Loading Actions...
+        </div>
     </main>
     <script>
         htmx.logAll();

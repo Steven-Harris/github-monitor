@@ -84,6 +84,9 @@ func (c *ghHttpClient) Pulls(repo string) ([]byte, error) {
 
 func (c *ghHttpClient) Runs(repo string) ([]byte, error) {
 	rel := &url.URL{Path: fmt.Sprintf("%s/actions/runs", repo)}
+	query := url.Values{}
+	query.Add("status", "waiting")
+	rel.RawQuery = query.Encode()
 	uri := c.baseUri.ResolveReference(rel)
 	req, err := http.NewRequest(http.MethodGet, uri.String(), nil)
 	if err != nil {
