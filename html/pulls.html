@@ -1,0 +1,10 @@
+<h3>Pull Requests</h3>
+<ul>
+    {{ block "pull-requests" .}}
+    {{ range .}}
+    <li>
+        {{.Title}}
+    </li>
+    {{ end }}
+    {{ end }}
+</ul>

@@ -24,7 +24,17 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "text/html")
 		w.WriteHeader(http.StatusOK)
-		tmpl := template.Must(template.ParseFiles("index.html"))
+		tmpl := template.Must(template.ParseFiles("html/index.html"))
+		err = tmpl.Execute(w, nil)
+		if err != nil {
+			log.Fatalf("Could not load index.html")
+		}
+	})
+
+	http.HandleFunc("/pulls", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "text/html")
+		w.WriteHeader(http.StatusOK)
+		tmpl := template.Must(template.ParseFiles("html/pulls.html"))
 		data, err := client.GetPullRequests()
 		if err != nil {
 			log.Fatalf("Could not fetch data: %s\n", err)
@@ -32,7 +42,7 @@ func main() {
 
 		err = tmpl.Execute(w, data)
 		if err != nil {
-			log.Fatalf("Could not load index.html")
+			log.Fatalf("Could not load pulls.html")
 		}
 	})
 

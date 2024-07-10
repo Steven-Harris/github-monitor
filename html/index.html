@@ -11,18 +11,7 @@
 <body>
     <main>
         <h1>Github Monitor</h1>
-
-        <h3>Pull Requests</h3>
-
-        <ul>
-            {{ block "pull-requests" .}}
-            {{ range .}}
-            <li>
-                {{.Title}}
-            </li>
-            {{ end }}
-            {{ end }}
-        </ul>
+        <div hx-get="/pulls" hx-trigger="load" hx-swap="outerHTML"></div>
     </main>
     <script>
         htmx.logAll();
