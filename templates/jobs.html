@@ -1,7 +1,15 @@
-<ul>
+<ul class="flex flex-wrap -m-1">
     {{ range .Jobs }}
-    <li>
-        <div>{{ .Name }}: {{ .Status }}</div>
+    <li class="p-1 w-1/4">
+        <div class="
+            {{- if eq .Status "completed" -}}
+            bg-green-200 border-green-600
+            {{- else if eq .Status "waiting" -}}
+            bg-yellow-200 border-yellow-600
+            {{- end }}
+            border rounded-lg p-3 shadow-sm flex justify-between items-center text-gray-600">
+            {{ .Name }}
+        </div>
     </li>
     {{ end }}
 </ul>
