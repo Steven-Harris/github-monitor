@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-900">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script defer src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.min.js"
+        integrity="sha384-wS5l5IKJBvK6sPTKa2WZ1js3d947pvWXbPJ1OmWfEuxLgeHcEbjUUA5i9V5ZkpCw"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+        integrity="sha384-HtMZLkYo+pR5/u7zCzXxMJP6QoNnQJt1qkHM0EaOPvGDIzaVZbmYr/TlvUZ/sKAg" crossorigin="anonymous">
+    <title>Github Monitor</title>
+    <style>
+        .glow {
+            box-shadow: 0 0 8px rgba(81, 203, 238, 1);
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: rgba(81, 203, 238, 1);
+            border-radius: 50%;
+            width: 2rem;
+            height: 2rem;
+            animation: spin 1s linear infinite;
+        }
+
+        #content {
+            height: calc(100vh - 10rem);
+        }
+    </style>
+</head>
+
+<body class="h-full text-white flex flex-col">
+    <main class="flex-1 p-10">
+        <h1 class="text-4xl font-bold text-center mb-10">Github Monitor</h1>
+        <div id="content" class="grid grid-cols-2 gap-4">
+            <div class="bg-gray-800 p-5 rounded-lg shadow-lg glow">
+                <h3 class="text-xl font-bold mb-4">Pull Requests</h3>
+                <div class="flex justify-center items-center h-full" hx-get="/pulls" hx-trigger="load"
+                    hx-swap="outerHTML">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 p-5 rounded-lg shadow-lg glow">
+                <h3 class="text-xl font-bold mb-4">Actions</h3>
+                <div class="flex justify-center items-center h-full" hx-get="/actions" hx-trigger="load"
+                    hx-swap="outerHTML">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

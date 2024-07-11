@@ -2,15 +2,17 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-	"text/template"
 
-	api "github.com/steven-harris/github-monitor/api"
+	"github.com/steven-harris/github-monitor/api"
 )
+
+type dataFetcher func() (interface{}, error)
 
 func main() {
 	handleSigTerms()
@@ -20,55 +22,15 @@ func main() {
 		log.Fatalf("Could not create github http client: %s\n", err)
 		os.Exit(1)
 	}
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "text/html")
-		w.WriteHeader(http.StatusOK)
-		tmpl := template.Must(template.ParseFiles("html/index.html"))
-		err = tmpl.Execute(w, nil)
-		if err != nil {
-			log.Fatalf("Could not load index.html")
-		}
-	})
-
-	http.HandleFunc("/pulls", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "text/html")
-		w.WriteHeader(http.StatusOK)
-		tmpl := template.Must(template.ParseFiles("html/pulls.html"))
-		data, err := client.GetPullRequests()
-		if err != nil {
-			log.Fatalf("Could not fetch data: %s\n", err)
-		}
-
-		err = tmpl.Execute(w, data)
-		if err != nil {
-			log.Fatalf("Could not load pulls.html")
-		}
-	})
-
-	http.HandleFunc("/actions", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "text/html")
-		tmpl, err := template.ParseFiles("html/actions.html")
-		if err != nil {
-			log.Printf("Error parsing template: %s\n", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-
-		data, err := client.GetActions()
-		if err != nil {
-			log.Printf("Could not fetch data: %s\n", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-
-		err = tmpl.Execute(w, data)
-		if err != nil {
-			log.Printf("Error executing template: %s\n", err)
-			// It's too late to change the HTTP status code here if you've already written to w.
-			// In a real scenario, consider logging the error or sending it to a monitoring system.
-			return
-		}
+	http.HandleFunc("/", renderHtmx("templates/index.html", nil))
+	http.HandleFunc("/pulls", renderHtmx("templates/pulls.html", client.GetPullRequests))
+	http.HandleFunc("/actions", renderHtmx("templates/actions.html", client.GetActions))
+	http.HandleFunc("/jobs", func(w http.ResponseWriter, r *http.Request) {
+		repo := r.URL.Query().Get("repo")
+		runId := r.URL.Query().Get("runId")
+		renderHtmx("templates/jobs.html", func() (interface{}, error) {
+			return client.GetJobs(repo, runId)
+		})(w, r)
 	})
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -78,6 +40,28 @@ func main() {
 
 	fmt.Println("Server starting on port 8888")
 	log.Fatal(http.ListenAndServe(":8888", nil))
+}
+
+func renderHtmx(templateFile string, fetchData dataFetcher) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "text/html")
+		w.WriteHeader(http.StatusOK)
+		tmpl := template.Must(template.ParseFiles(templateFile))
+
+		var data interface{}
+		var err error
+		if fetchData != nil { // fetchData can be nil if no data needs to be fetched
+			data, err = fetchData()
+			if err != nil {
+				log.Fatalf("Could not fetch data: %s\n", err)
+			}
+		}
+
+		err = tmpl.Execute(w, data)
+		if err != nil {
+			log.Fatalf("Could not load template: %s\n", err)
+		}
+	}
 }
 
 func handleSigTerms() {

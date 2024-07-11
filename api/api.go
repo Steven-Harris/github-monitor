@@ -3,9 +3,10 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
-func (gh *ghHttpClient) GetPullRequests() ([]PullRequest, error) {
+func (gh *ghHttpClient) GetPullRequests() (interface{}, error) {
 
 	repos, err := GetRepos()
 	if err != nil {
@@ -32,7 +33,7 @@ func (gh *ghHttpClient) GetPullRequests() ([]PullRequest, error) {
 	return pullRequests, nil
 }
 
-func (gh *ghHttpClient) GetActions() ([]Runs, error) {
+func (gh *ghHttpClient) GetActions() (interface{}, error) {
 
 	repos, err := GetRepos()
 	if err != nil {
@@ -52,9 +53,25 @@ func (gh *ghHttpClient) GetActions() ([]Runs, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error mapping response into object: %s", err)
 		}
-
+		repoRun.RepositoryName = strings.Split(repo, "/")[1]
 		runs = append(runs, repoRun)
 	}
 
 	return runs, nil
+}
+
+func (gh *ghHttpClient) GetJobs(repo string, runId string) (interface{}, error) {
+
+	body, err := gh.Jobs(repo, runId)
+	if err != nil {
+		return Jobs{}, fmt.Errorf("error making request to get runs: %s", err)
+	}
+
+	var jobs Jobs
+	err = json.Unmarshal(body, &jobs)
+	if err != nil {
+		return Jobs{}, fmt.Errorf("error mapping response into object: %s", err)
+	}
+
+	return jobs, nil
 }

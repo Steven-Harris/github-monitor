@@ -1,0 +1,7 @@
+<ul>
+    {{ range .Jobs }}
+    <li>
+        <div>{{ .Name }}: {{ .Status }}</div>
+    </li>
+    {{ end }}
+</ul>

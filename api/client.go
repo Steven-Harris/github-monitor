@@ -18,10 +18,6 @@ type ghHttpClient struct {
 	token   string
 }
 
-type GHClient interface {
-	Pulls(repo string) ([]byte, error)
-}
-
 func NewGitHubHttpClient() (*ghHttpClient, error) {
 	token, err := GetToken()
 	if err != nil {
@@ -44,49 +40,26 @@ func NewGitHubHttpClient() (*ghHttpClient, error) {
 }
 
 func (c *ghHttpClient) Pulls(repo string) ([]byte, error) {
-	rel := &url.URL{Path: fmt.Sprintf("%s/pulls", repo)}
 	query := url.Values{}
 	query.Add("state", "open")
-	rel.RawQuery = query.Encode()
-	uri := c.baseUri.ResolveReference(rel)
-	req, err := http.NewRequest(http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, errors.New("could not build request")
-	}
-
-	req.Header.Add("Accept", "application/vnd.github+json")
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", c.token))
-	req.Header.Add("X-Github-Api-Version", githubApiVersion)
-
-	res, err := c.client.Do(req)
-	if err != nil {
-		return nil, errors.New("could not connect to Github")
-	}
-
-	switch res.StatusCode {
-	case http.StatusNotFound, http.StatusInternalServerError:
-		{
-			return nil, fmt.Errorf("url not found: %s", uri.String())
-		}
-	case http.StatusOK:
-		{
-			body, err := io.ReadAll(res.Body)
-			if err != nil {
-				return nil, errors.New("could not read response body from Github Api")
-			}
-
-			return body, nil
-		}
-	default:
-		return nil, fmt.Errorf("something happened: %s", res.Status)
-	}
+	return c.request(fmt.Sprintf("%s/pulls", repo), query)
 }
 
 func (c *ghHttpClient) Runs(repo string) ([]byte, error) {
-	rel := &url.URL{Path: fmt.Sprintf("%s/actions/runs", repo)}
 	query := url.Values{}
 	query.Add("status", "waiting")
-	rel.RawQuery = query.Encode()
+	return c.request(fmt.Sprintf("%s/actions/runs", repo), nil)
+}
+
+func (c *ghHttpClient) Jobs(repo string, runId string) ([]byte, error) {
+	return c.request(fmt.Sprintf("%s/actions/runs/%s/jobs", repo, runId), nil)
+}
+
+func (c *ghHttpClient) request(path string, query url.Values) ([]byte, error) {
+	rel := &url.URL{Path: path}
+	if query != nil {
+		rel.RawQuery = query.Encode()
+	}
 	uri := c.baseUri.ResolveReference(rel)
 	req, err := http.NewRequest(http.MethodGet, uri.String(), nil)
 	if err != nil {
@@ -101,21 +74,17 @@ func (c *ghHttpClient) Runs(repo string) ([]byte, error) {
 	if err != nil {
 		return nil, errors.New("could not connect to Github")
 	}
+	defer res.Body.Close()
 
 	switch res.StatusCode {
 	case http.StatusNotFound, http.StatusInternalServerError:
-		{
-			return nil, fmt.Errorf("url not found: %s", uri.String())
-		}
+		return nil, fmt.Errorf("url not found: %s", uri.String())
 	case http.StatusOK:
-		{
-			body, err := io.ReadAll(res.Body)
-			if err != nil {
-				return nil, errors.New("could not read response body from Github Api")
-			}
-
-			return body, nil
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, errors.New("could not read response body from Github Api")
 		}
+		return body, nil
 	default:
 		return nil, fmt.Errorf("something happened: %s", res.Status)
 	}

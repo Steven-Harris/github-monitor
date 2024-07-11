@@ -313,6 +313,38 @@ type WorkflowRuns struct {
 }
 
 type Runs struct {
-	TotalCount   int            `json:"total_count"`
-	WorkflowRuns []WorkflowRuns `json:"workflow_runs"`
+	TotalCount     int `json:"total_count"`
+	RepositoryName string
+	WorkflowRuns   []WorkflowRuns `json:"workflow_runs"`
+}
+
+type Job struct {
+	ID              int64     `json:"id"`
+	RunID           int64     `json:"run_id"`
+	WorkflowName    string    `json:"workflow_name"`
+	HeadBranch      string    `json:"head_branch"`
+	RunURL          string    `json:"run_url"`
+	RunAttempt      int       `json:"run_attempt"`
+	NodeID          string    `json:"node_id"`
+	HeadSha         string    `json:"head_sha"`
+	URL             string    `json:"url"`
+	HTMLURL         string    `json:"html_url"`
+	Status          string    `json:"status"`
+	Conclusion      any       `json:"conclusion"`
+	CreatedAt       time.Time `json:"created_at"`
+	StartedAt       time.Time `json:"started_at"`
+	CompletedAt     any       `json:"completed_at"`
+	Name            string    `json:"name"`
+	Steps           []any     `json:"steps"`
+	CheckRunURL     string    `json:"check_run_url"`
+	Labels          []string  `json:"labels"`
+	RunnerID        any       `json:"runner_id"`
+	RunnerName      any       `json:"runner_name"`
+	RunnerGroupID   any       `json:"runner_group_id"`
+	RunnerGroupName any       `json:"runner_group_name"`
+}
+
+type Jobs struct {
+	TotalCount int   `json:"total_count"`
+	Jobs       []Job `json:"jobs"`
 }
