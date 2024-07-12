@@ -5,7 +5,7 @@
         {{ range .WorkflowRuns }}
         <li class="mb-2">
             <div class="p-2 bg-gray-700 rounded-md hover:bg-gray-600">
-                <label>{{ .Name }}</label>
+                <a href="{{ .HTMLURL }}" target="_blank" class="link">{{ .Name }}</a>
                 <div hx-get="/jobs?runId={{ .ID }}&repo={{ .Repository.FullName}}" hx-trigger="load"
                     hx-swap="outerHTML">
                 </div>
