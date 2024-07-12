@@ -18,20 +18,25 @@ func (gh *ghHttpClient) GetPullRequests() (interface{}, error) {
 	repoPulls := make([]RepoPullRequests, len(repos))
 	for i := 0; i < len(repos); i++ {
 
-		body, err := gh.request(fmt.Sprintf("%s/pulls", repos[i]), query)
+		label := ""
+		if repos[i].Label != "" {
+			label = fmt.Sprintf("+label:%s", repos[i].Label)
+		}
+		query := fmt.Sprintf("repo:%s+is:pr%s+is:open", repos[i].Repo, label)
+		body, err := gh.search(query)
 		if err != nil {
 			return nil, fmt.Errorf("error making request to get pull requests: %s", err)
 		}
 
-		var pulls []PullRequest
-		err = json.Unmarshal(body, &pulls)
+		var results SearchResults
+		err = json.Unmarshal(body, &results)
 		if err != nil {
 			return nil, fmt.Errorf("error mapping response into object: %s", err)
 		}
 
 		repoPulls[i] = RepoPullRequests{
-			RepositoryName: strings.Split(repos[i], "/")[1],
-			PullRequests:   pulls,
+			RepositoryName: strings.Split(repos[i].Repo, "/")[1],
+			PullRequests:   results.Items,
 		}
 	}
 

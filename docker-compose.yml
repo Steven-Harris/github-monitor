@@ -14,7 +14,9 @@ services:
         JHADigitalCore/general-ledger-translation-service,
         JHADigitalCore/general-ledger-transfers-processor,
         JHADigitalCore/general-ledger-manual-journal-processor,
-        JHADigitalCore/general-ledger-import-service
+        JHADigitalCore/general-ledger-import-service,
+        JHADigitalCore/environments?label=general-ledger,
+        JHADigitalCore/k8s-apps?label=general-ledger
       ACTION_REPOS: |
         JHADigitalCore/general-ledger-service,
         JHADigitalCore/general-ledger-translation-service,

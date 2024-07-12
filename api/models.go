@@ -169,7 +169,71 @@ type PullRequest struct {
 
 type RepoPullRequests struct {
 	RepositoryName string
-	PullRequests   []PullRequest
+	PullRequests   []SearchItem
+}
+
+type SearchItem struct {
+	URL           string     `json:"url"`
+	RepositoryURL string     `json:"repository_url"`
+	LabelsURL     string     `json:"labels_url"`
+	CommentsURL   string     `json:"comments_url"`
+	EventsURL     string     `json:"events_url"`
+	HTMLURL       string     `json:"html_url"`
+	ID            int64      `json:"id"`
+	NodeID        string     `json:"node_id"`
+	Number        int        `json:"number"`
+	Title         string     `json:"title"`
+	User          GithubUser `json:"user"`
+	Labels        []struct {
+		ID          int64  `json:"id"`
+		NodeID      string `json:"node_id"`
+		URL         string `json:"url"`
+		Name        string `json:"name"`
+		Color       string `json:"color"`
+		Default     bool   `json:"default"`
+		Description string `json:"description"`
+	} `json:"labels"`
+	State             string       `json:"state"`
+	Locked            bool         `json:"locked"`
+	Assignee          GithubUser   `json:"assignee"`
+	Assignees         []GithubUser `json:"assignees"`
+	Milestone         any          `json:"milestone"`
+	Comments          int          `json:"comments"`
+	CreatedAt         time.Time    `json:"created_at"`
+	UpdatedAt         time.Time    `json:"updated_at"`
+	ClosedAt          any          `json:"closed_at"`
+	AuthorAssociation string       `json:"author_association"`
+	ActiveLockReason  any          `json:"active_lock_reason"`
+	Draft             bool         `json:"draft"`
+	PullRequest       struct {
+		URL      string `json:"url"`
+		HTMLURL  string `json:"html_url"`
+		DiffURL  string `json:"diff_url"`
+		PatchURL string `json:"patch_url"`
+		MergedAt any    `json:"merged_at"`
+	} `json:"pull_request"`
+	Body      string `json:"body"`
+	Reactions struct {
+		URL        string `json:"url"`
+		TotalCount int    `json:"total_count"`
+		Num1       int    `json:"+1"`
+		Num10      int    `json:"-1"`
+		Laugh      int    `json:"laugh"`
+		Hooray     int    `json:"hooray"`
+		Confused   int    `json:"confused"`
+		Heart      int    `json:"heart"`
+		Rocket     int    `json:"rocket"`
+		Eyes       int    `json:"eyes"`
+	} `json:"reactions"`
+	TimelineURL           string  `json:"timeline_url"`
+	PerformedViaGithubApp any     `json:"performed_via_github_app"`
+	StateReason           any     `json:"state_reason"`
+	Score                 float64 `json:"score"`
+}
+type SearchResults struct {
+	TotalCount        int          `json:"total_count"`
+	IncompleteResults bool         `json:"incomplete_results"`
+	Items             []SearchItem `json:"items"`
 }
 
 type WorkflowRuns struct {
@@ -369,4 +433,9 @@ type Review struct {
 	SubmittedAt       time.Time `json:"submitted_at"`
 	CommitID          string    `json:"commit_id"`
 	AuthorAssociation string    `json:"author_association"`
+}
+
+type PullRequestConfig struct {
+	Repo  string
+	Label string
 }
