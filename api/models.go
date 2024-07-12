@@ -434,8 +434,3 @@ type Review struct {
 	CommitID          string    `json:"commit_id"`
 	AuthorAssociation string    `json:"author_association"`
 }
-
-type PullRequestConfig struct {
-	Repo  string
-	Label string
-}

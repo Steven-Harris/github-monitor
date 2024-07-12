@@ -9,18 +9,19 @@ services:
       - .env
     environment:
       GITHUB_TOKEN: ${GITHUB_TOKEN}
+      GITHUB_ORG: JHADigitalCore
       PR_REPOS: |
-        JHADigitalCore/general-ledger-service,
-        JHADigitalCore/general-ledger-translation-service,
-        JHADigitalCore/general-ledger-transfers-processor,
-        JHADigitalCore/general-ledger-manual-journal-processor,
-        JHADigitalCore/general-ledger-import-service,
-        JHADigitalCore/environments?label=general-ledger,
-        JHADigitalCore/k8s-apps?label=general-ledger
+        general-ledger-service,
+        general-ledger-translation-service,
+        general-ledger-transfers-processor,
+        general-ledger-manual-journal-processor,
+        general-ledger-import-service,
+        environments+label:general-ledger,
+        k8s-apps+label:general-ledger
       ACTION_REPOS: |
-        JHADigitalCore/general-ledger-service,
-        JHADigitalCore/general-ledger-translation-service,
-        JHADigitalCore/general-ledger-transfers-processor,
-        JHADigitalCore/general-ledger-manual-journal-processor,
-        JHADigitalCore/general-ledger-import-service
+        general-ledger-service,
+        general-ledger-translation-service,
+        general-ledger-transfers-processor,
+        general-ledger-manual-journal-processor,
+        general-ledger-import-service
       ACTION_FILTER: deploy

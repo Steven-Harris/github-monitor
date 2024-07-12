@@ -42,8 +42,7 @@ func NewGitHubHttpClient() (*ghHttpClient, error) {
 func (c *ghHttpClient) search(query string) ([]byte, error) {
 	rel := &url.URL{Path: "search/issues"}
 	uri := c.baseUri.ResolveReference(rel)
-	// Manually append the query string without encoding
-	queryString := "?q=" + query // This is where you directly use the query without encoding
+	queryString := "?q=" + query
 	fullURL := uri.String() + queryString
 	req, err := http.NewRequest(http.MethodGet, fullURL, nil)
 	if err != nil {

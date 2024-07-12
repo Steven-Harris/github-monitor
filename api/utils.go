@@ -14,13 +14,29 @@ func GetToken() (string, error) {
 	return t, nil
 }
 
+func GetOrg() (string, error) {
+	o := os.Getenv("GITHUB_ORG")
+	if o == "" {
+		return "", errors.New("GITHUB_ORG not found")
+	}
+	return o, nil
+}
+
 func GetActionRepos() ([]string, error) {
 	r := os.Getenv("ACTION_REPOS")
 	if r == "" {
 		return nil, errors.New("ACTION_REPOS not found")
 	}
 	r = strings.ReplaceAll(r, "\n", "")
-	return strings.Split(r, ","), nil
+	repos := strings.Split(r, ",")
+	org, err := GetOrg()
+	if err != nil {
+		return nil, err
+	}
+	for i, repo := range repos {
+		repos[i] = org + "/" + repo
+	}
+	return repos, nil
 }
 
 func GetActionFilter() string {
@@ -28,25 +44,19 @@ func GetActionFilter() string {
 	return f
 }
 
-func GetPRRepos() ([]PullRequestConfig, error) {
+func GetPRRepos() ([]string, error) {
 	r := os.Getenv("PR_REPOS")
 	if r == "" {
 		return nil, errors.New("PR_REPOS not found")
 	}
 	r = strings.ReplaceAll(r, "\n", "")
 	repos := strings.Split(r, ",")
-	var prConfigs []PullRequestConfig
-	for _, repo := range repos {
-		parts := strings.Split(repo, "?label=")
-		label := ""
-		if len(parts) > 1 {
-			label = parts[1]
-		}
-		prConfig := PullRequestConfig{
-			Repo:  parts[0],
-			Label: label,
-		}
-		prConfigs = append(prConfigs, prConfig)
+	org, err := GetOrg()
+	if err != nil {
+		return nil, err
 	}
-	return prConfigs, nil
+	for i, repo := range repos {
+		repos[i] = org + "/" + repo
+	}
+	return repos, nil
 }
