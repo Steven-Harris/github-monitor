@@ -3,17 +3,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    develop:
-      watch:
-        - action: rebuild
-          path: ./
-          target: ./app
-          files:
-            - ./**/*.go
-            - ./go.mod
-            - ./go.sum
     ports:
       - 8888:8888
+    env_file:
+      - .env
     environment:
       GITHUB_TOKEN: ${GITHUB_TOKEN}
-      GITHUB_REPOS: ${GITHUB_REPOS}
+      MONITOR_PR_REPOS: ${MONITOR_PR_REPOS}
+      MONITOR_ACTION_REPOS: ${MONITOR_ACTION_REPOS}
