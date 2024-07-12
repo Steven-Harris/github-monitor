@@ -3,47 +3,67 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"strings"
 )
 
 func (gh *ghHttpClient) GetPullRequests() (interface{}, error) {
 
-	repos, err := GetRepos()
+	repos, err := GetPRRepos()
 	if err != nil {
 		return nil, err
 	}
 
-	pullRequests := make([]PullRequest, 0)
-	for _, repo := range repos {
-
-		body, err := gh.Pulls(repo)
+	repoPulls := make([]RepoPullRequests, len(repos))
+	for i := 0; i < len(repos); i++ {
+		query := url.Values{}
+		query.Add("state", "open")
+		body, err := gh.request(fmt.Sprintf("%s/pulls", repos[i]), query)
 		if err != nil {
 			return nil, fmt.Errorf("error making request to get pull requests: %s", err)
 		}
 
-		var repoPulls []PullRequest
-		err = json.Unmarshal(body, &repoPulls)
+		var pulls []PullRequest
+		err = json.Unmarshal(body, &pulls)
 		if err != nil {
 			return nil, fmt.Errorf("error mapping response into object: %s", err)
 		}
 
-		pullRequests = append(pullRequests, repoPulls...)
+		repoPulls[i] = RepoPullRequests{
+			RepositoryName: strings.Split(repos[i], "/")[1],
+			PullRequests:   pulls,
+		}
 	}
 
-	return pullRequests, nil
+	return repoPulls, nil
+}
+
+func (gh *ghHttpClient) GetReviews(repo string, prNumber string) (interface{}, error) {
+
+	body, err := gh.request(fmt.Sprintf("%s/pulls/%s/reviews", repo, prNumber), nil)
+	if err != nil {
+		return nil, fmt.Errorf("error making request to get reviews: %s", err)
+	}
+
+	var reviews []Review
+	err = json.Unmarshal(body, &reviews)
+	if err != nil {
+		return nil, fmt.Errorf("error mapping response into object: %s", err)
+	}
+
+	return reviews, nil
 }
 
 func (gh *ghHttpClient) GetActions() (interface{}, error) {
 
-	repos, err := GetRepos()
+	repos, err := GetActionRepos()
 	if err != nil {
 		return nil, err
 	}
 
 	runs := make([]Runs, 0)
 	for _, repo := range repos {
-
-		body, err := gh.Runs(repo)
+		body, err := gh.request(fmt.Sprintf("%s/actions/runs", repo), nil)
 		if err != nil {
 			return nil, fmt.Errorf("error making request to get runs: %s", err)
 		}
@@ -62,7 +82,7 @@ func (gh *ghHttpClient) GetActions() (interface{}, error) {
 
 func (gh *ghHttpClient) GetJobs(repo string, runId string) (interface{}, error) {
 
-	body, err := gh.Jobs(repo, runId)
+	body, err := gh.request(fmt.Sprintf("%s/actions/runs/%s/jobs", repo, runId), nil)
 	if err != nil {
 		return Jobs{}, fmt.Errorf("error making request to get runs: %s", err)
 	}

@@ -167,6 +167,11 @@ type PullRequest struct {
 	ActiveLockReason   any             `json:"active_lock_reason"`
 }
 
+type RepoPullRequests struct {
+	RepositoryName string
+	PullRequests   []PullRequest
+}
+
 type WorkflowRuns struct {
 	ID               int        `json:"id"`
 	Name             string     `json:"name"`
@@ -347,4 +352,21 @@ type Job struct {
 type Jobs struct {
 	TotalCount int   `json:"total_count"`
 	Jobs       []Job `json:"jobs"`
+}
+
+type Review struct {
+	ID             int        `json:"id"`
+	NodeID         string     `json:"node_id"`
+	User           GithubUser `json:"user"`
+	Body           string     `json:"body"`
+	State          string     `json:"state"`
+	HTMLURL        string     `json:"html_url"`
+	PullRequestURL string     `json:"pull_request_url"`
+	Links          struct {
+		HTML        LinkRef `json:"html"`
+		PullRequest LinkRef `json:"pull_request"`
+	} `json:"_links"`
+	SubmittedAt       time.Time `json:"submitted_at"`
+	CommitID          string    `json:"commit_id"`
+	AuthorAssociation string    `json:"author_association"`
 }

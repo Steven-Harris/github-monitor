@@ -39,22 +39,6 @@ func NewGitHubHttpClient() (*ghHttpClient, error) {
 	}, nil
 }
 
-func (c *ghHttpClient) Pulls(repo string) ([]byte, error) {
-	query := url.Values{}
-	query.Add("state", "open")
-	return c.request(fmt.Sprintf("%s/pulls", repo), query)
-}
-
-func (c *ghHttpClient) Runs(repo string) ([]byte, error) {
-	query := url.Values{}
-	query.Add("status", "waiting")
-	return c.request(fmt.Sprintf("%s/actions/runs", repo), nil)
-}
-
-func (c *ghHttpClient) Jobs(repo string, runId string) ([]byte, error) {
-	return c.request(fmt.Sprintf("%s/actions/runs/%s/jobs", repo, runId), nil)
-}
-
 func (c *ghHttpClient) request(path string, query url.Values) ([]byte, error) {
 	rel := &url.URL{Path: path}
 	if query != nil {
@@ -72,7 +56,7 @@ func (c *ghHttpClient) request(path string, query url.Values) ([]byte, error) {
 
 	res, err := c.client.Do(req)
 	if err != nil {
-		return nil, errors.New("could not connect to Github")
+		return nil, fmt.Errorf("could not make request: %s", err)
 	}
 	defer res.Body.Close()
 

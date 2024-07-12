@@ -23,13 +23,20 @@ func main() {
 		os.Exit(1)
 	}
 	http.HandleFunc("/", renderHtmx("templates/index.html", nil))
-	http.HandleFunc("/pulls", renderHtmx("templates/pulls.html", client.GetPullRequests))
+	http.HandleFunc("/pull-requests", renderHtmx("templates/pull-requests.html", client.GetPullRequests))
 	http.HandleFunc("/actions", renderHtmx("templates/actions.html", client.GetActions))
 	http.HandleFunc("/jobs", func(w http.ResponseWriter, r *http.Request) {
 		repo := r.URL.Query().Get("repo")
 		runId := r.URL.Query().Get("runId")
 		renderHtmx("templates/jobs.html", func() (interface{}, error) {
 			return client.GetJobs(repo, runId)
+		})(w, r)
+	})
+	http.HandleFunc("/reviews", func(w http.ResponseWriter, r *http.Request) {
+		repo := r.URL.Query().Get("repo")
+		prNumber := r.URL.Query().Get("prNumber")
+		renderHtmx("templates/reviews.html", func() (interface{}, error) {
+			return client.GetReviews(repo, prNumber)
 		})(w, r)
 	})
 
