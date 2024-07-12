@@ -9,5 +9,16 @@ services:
       - .env
     environment:
       GITHUB_TOKEN: ${GITHUB_TOKEN}
-      MONITOR_PR_REPOS: ${MONITOR_PR_REPOS}
-      MONITOR_ACTION_REPOS: ${MONITOR_ACTION_REPOS}
+      PR_REPOS: |
+        JHADigitalCore/general-ledger-service,
+        JHADigitalCore/general-ledger-translation-service,
+        JHADigitalCore/general-ledger-transfers-processor,
+        JHADigitalCore/general-ledger-manual-journal-processor,
+        JHADigitalCore/general-ledger-import-service
+      ACTION_REPOS: |
+        JHADigitalCore/general-ledger-service,
+        JHADigitalCore/general-ledger-translation-service,
+        JHADigitalCore/general-ledger-transfers-processor,
+        JHADigitalCore/general-ledger-manual-journal-processor,
+        JHADigitalCore/general-ledger-import-service
+      ACTION_FILTER: deploy

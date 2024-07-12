@@ -13,11 +13,11 @@ func (gh *ghHttpClient) GetPullRequests() (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	query := url.Values{}
+	query.Add("state", "open")
 	repoPulls := make([]RepoPullRequests, len(repos))
 	for i := 0; i < len(repos); i++ {
-		query := url.Values{}
-		query.Add("state", "open")
+
 		body, err := gh.request(fmt.Sprintf("%s/pulls", repos[i]), query)
 		if err != nil {
 			return nil, fmt.Errorf("error making request to get pull requests: %s", err)
@@ -60,10 +60,16 @@ func (gh *ghHttpClient) GetActions() (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+	filter := GetActionFilter()
+	if filter != "" {
+		filter = fmt.Sprintf("/workflows/%s.yml", filter)
+	}
+	query := url.Values{}
+	query.Add("per_page", "1")
 
 	runs := make([]Runs, 0)
 	for _, repo := range repos {
-		body, err := gh.request(fmt.Sprintf("%s/actions/runs", repo), nil)
+		body, err := gh.request(fmt.Sprintf("%s/actions%s/runs", repo, filter), query)
 		if err != nil {
 			return nil, fmt.Errorf("error making request to get runs: %s", err)
 		}

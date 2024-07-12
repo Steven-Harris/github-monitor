@@ -2,7 +2,6 @@ package api
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"strings"
 )
@@ -12,22 +11,28 @@ func GetToken() (string, error) {
 	if t == "" {
 		return "", errors.New("GITHUB_TOKEN not found")
 	}
-	fmt.Println("Token: ", t)
 	return t, nil
 }
 
 func GetActionRepos() ([]string, error) {
-	r := os.Getenv("MONITOR_ACTION_REPOS")
+	r := os.Getenv("ACTION_REPOS")
 	if r == "" {
-		return nil, errors.New("MONITOR_ACTION_REPOS not found")
+		return nil, errors.New("ACTION_REPOS not found")
 	}
+	r = strings.ReplaceAll(r, "\n", "")
 	return strings.Split(r, ","), nil
 }
 
+func GetActionFilter() string {
+	f := os.Getenv("ACTION_FILTER")
+	return f
+}
+
 func GetPRRepos() ([]string, error) {
-	r := os.Getenv("MONITOR_PR_REPOS")
+	r := os.Getenv("PR_REPOS")
 	if r == "" {
-		return nil, errors.New("MONITOR_PR_REPOS not found")
+		return nil, errors.New("PR_REPOS not found")
 	}
+	r = strings.ReplaceAll(r, "\n", "")
 	return strings.Split(r, ","), nil
 }
