@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8888:8888
+    volumes:
+      - ./templates:/templates
     env_file:
       - .env
     environment:
