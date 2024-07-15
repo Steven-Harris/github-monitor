@@ -48,6 +48,10 @@ func main() {
 		fmt.Fprint(w, "Healthy")
 	})
 
+	http.HandleFunc("/components/*", func(w http.ResponseWriter, r *http.Request) {
+		renderHtmx("/templates"+r.URL.Path+".html", nil)(w, r)
+	})
+
 	fmt.Println("Server starting on port 8888")
 	log.Fatal(http.ListenAndServe(":8888", nil))
 }
@@ -60,16 +64,18 @@ func renderHtmx(templateFile string, fetchData dataFetcher) http.HandlerFunc {
 
 		var data interface{}
 		var err error
-		if fetchData != nil { // fetchData can be nil if no data needs to be fetched
+		if fetchData != nil {
 			data, err = fetchData()
 			if err != nil {
-				log.Fatalf("Could not fetch data: %s\n", err)
+				_ = fmt.Errorf("could not fetch data: %s", err)
+				return
 			}
 		}
 
 		err = tmpl.Execute(w, data)
 		if err != nil {
-			log.Fatalf("Could not load template: %s\n", err)
+			_ = fmt.Errorf("could not load template: %s", err)
+			return
 		}
 	}
 }
