@@ -22,7 +22,7 @@
                 <h3 class="text-xl font-bold mb-4">Pull Requests</h3>
                 <div hx-get="/pull-requests" hx-trigger="load, every 15s" hx-swap="innerHTML" hx-indicator="#loading-pulls">
                 </div>
-                <div id="loading-pulls" class="htmx-indicator absolute z-10 top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-gray-800 bg-opacity-50"> 
+                <div id="loading-pulls" class="htmx-indicator absolute z-10 top-0 left-0 right-0 bottom-0 justify-center items-center bg-gray-800 bg-opacity-50"> 
                     <div class="spinner"></div>
                 </div>
             </div>
@@ -31,7 +31,7 @@
                 <h3 class="text-xl font-bold mb-4">Actions</h3>
                 <div hx-get="/actions" hx-trigger="load, every 30s" hx-swap="innerHTML" hx-indicator="#loading-actions">
                 </div>
-                <div id="loading-actions" class="htmx-indicator absolute z-10 top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
+                <div id="loading-actions" class="htmx-indicator absolute z-10 top-0 left-0 right-0 bottom-0 justify-center items-center bg-gray-800 bg-opacity-50">
                     <div class="spinner"></div>
                 </div>
             </div>
