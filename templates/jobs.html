@@ -1,15 +1,21 @@
 <!-- prettier-ignore -->
 <ul class="flex flex-wrap -m-1">
     {{ range .Jobs }}
-    <li class="p-1 w-1/4">
+    <li class="p-1">
         <span class="
-            {{- if eq .Status "completed" -}}
+            {{- if and (eq .Status "completed") (eq .Conclusion "success") -}}
             bg-green-200 border-green-600
+            {{- else if and (eq .Status "completed") (eq .Conclusion "failure") -}}
+            bg-red-200 border-red-600
             {{- else if eq .Status "waiting" -}}
             bg-yellow-200 border-yellow-600
+            {{- else if eq .Status "in_progress" -}}
+            bg-blue-200 border-blue-600
+            {{- else -}}
+            bg-gray-300 border-gray-300
             {{- end }}
             border rounded-lg p-3 shadow-sm flex justify-between items-center text-gray-600">
-            <label>{{ .Name }}</label>
+            <label class="text-sm">{{ .Name }}</label>
             {{ if eq .Status "waiting" }}
             <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="0.5" stroke="currentColor"
                 class="size-1">
