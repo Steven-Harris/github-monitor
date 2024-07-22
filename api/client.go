@@ -74,7 +74,13 @@ func (c *ghHttpClient) search(query string) ([]byte, error) {
 }
 
 func (c *ghHttpClient) request(path string, query url.Values) ([]byte, error) {
-	rel := &url.URL{Path: "repos/" + path}
+	org, err := GetOrg()
+	if err != nil {
+		return nil, errors.New("GITHUB_ORG not found")
+	}
+
+	// org + / + path is probably wrong
+	rel := &url.URL{Path: "repos/" + org + "/" + path}
 	if query != nil {
 		rel.RawQuery = query.Encode()
 	}

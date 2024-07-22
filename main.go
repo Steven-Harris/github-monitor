@@ -23,8 +23,20 @@ func main() {
 		os.Exit(1)
 	}
 	http.HandleFunc("/", renderHtmx("templates/index.html", nil))
-	http.HandleFunc("/pull-requests", renderHtmx("templates/pull-requests.html", client.GetPullRequests))
-	http.HandleFunc("/actions", renderHtmx("templates/actions.html", client.GetActions))
+	http.HandleFunc("/pull-requests", renderHtmx("templates/pull-requests.html", client.GetPRRepos))
+	http.HandleFunc("/actions", renderHtmx("templates/actions.html", client.GetActionRepos))
+	http.HandleFunc("/repo-pull-requests", func(w http.ResponseWriter, r *http.Request) {
+		repo := r.URL.Query().Get("repo")
+		renderHtmx("templates/repo-pull-requests.html", func() (interface{}, error) {
+			return client.GetPullRequests(repo)
+		})(w, r)
+	})
+	http.HandleFunc("/repo-actions", func(w http.ResponseWriter, r *http.Request) {
+		repo := r.URL.Query().Get("repo")
+		renderHtmx("templates/repo-actions.html", func() (interface{}, error) {
+			return client.GetActions(repo)
+		})(w, r)
+	})
 	http.HandleFunc("/jobs", func(w http.ResponseWriter, r *http.Request) {
 		repo := r.URL.Query().Get("repo")
 		runId := r.URL.Query().Get("runId")

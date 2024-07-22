@@ -1,0 +1,12 @@
+{{ range .Items }}
+<li class="mb-2 flex items-center">
+    <!-- if .Approved 
+        <img src=".Approver.PictureURL" alt="Approver's Picture" class="w-8 h-8 rounded-full mr-2">
+        <span class="text-green-500 mr-2">✔</span>
+        <span class="mr-2">.Approver.Name</span>
+         end -->
+    <div class="p-2 bg-gray-700 rounded-md hover:bg-gray-600 flex-grow">
+        <a href="{{ .HTMLURL}}" target="_blank" class="link">{{.Title}}</a>
+    </div>
+</li>
+{{ end }}

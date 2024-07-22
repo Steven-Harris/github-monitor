@@ -18,10 +18,11 @@ services:
         general-ledger-transfers-processor,
         general-ledger-manual-journal-processor,
         general-ledger-import-service,
-        environments+label:general-ledger,
-        k8s-apps+label:general-ledger,
-        digitalcore-contracts+label:general-ledger,
-        digitalcore-messages-doc+label:general-ledger
+        environments,
+        k8s-apps,
+        digitalcore-contracts,
+        digitalcore-messages-doc
+      PR_FILTER: label:general-ledger
       ACTION_REPOS: |
         general-ledger-service,
         general-ledger-translation-service,

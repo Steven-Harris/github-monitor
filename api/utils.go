@@ -22,28 +22,6 @@ func GetOrg() (string, error) {
 	return o, nil
 }
 
-func GetActionRepos() ([]string, error) {
-	r := os.Getenv("ACTION_REPOS")
-	if r == "" {
-		return nil, errors.New("ACTION_REPOS not found")
-	}
-	r = strings.ReplaceAll(r, "\n", "")
-	repos := strings.Split(r, ",")
-	org, err := GetOrg()
-	if err != nil {
-		return nil, err
-	}
-	for i, repo := range repos {
-		repos[i] = org + "/" + repo
-	}
-	return repos, nil
-}
-
-func GetActionFilter() string {
-	f := os.Getenv("ACTION_FILTER")
-	return f
-}
-
 func GetPRRepos() ([]string, error) {
 	r := os.Getenv("PR_REPOS")
 	if r == "" {
@@ -51,12 +29,25 @@ func GetPRRepos() ([]string, error) {
 	}
 	r = strings.ReplaceAll(r, "\n", "")
 	repos := strings.Split(r, ",")
-	org, err := GetOrg()
-	if err != nil {
-		return nil, err
-	}
-	for i, repo := range repos {
-		repos[i] = org + "/" + repo
-	}
 	return repos, nil
+}
+
+func GetPRFilter() string {
+	f := os.Getenv("PR_FILTER")
+	return f
+}
+
+func GetActionRepos() ([]string, error) {
+	r := os.Getenv("ACTION_REPOS")
+	if r == "" {
+		return nil, errors.New("ACTION_REPOS not found")
+	}
+	r = strings.ReplaceAll(r, "\n", "")
+	repos := strings.Split(r, ",")
+	return repos, nil
+}
+
+func GetActionFilter() string {
+	f := os.Getenv("ACTION_FILTER")
+	return f
 }

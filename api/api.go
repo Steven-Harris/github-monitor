@@ -4,41 +4,52 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"strings"
 )
 
-func (gh *ghHttpClient) GetPullRequests() (interface{}, error) {
+func (gh ghHttpClient) GetPRRepos() (interface{}, error) {
 
 	repos, err := GetPRRepos()
 	if err != nil {
 		return nil, err
 	}
-	query := url.Values{}
-	query.Add("state", "open")
-	repoPulls := make([]RepoPullRequests, len(repos))
-	for i := 0; i < len(repos); i++ {
 
-		body, err := gh.search(fmt.Sprintf("repo:%s+is:pr+is:open", repos[i]))
-		if err != nil {
-			return nil, fmt.Errorf("error making request to get pull requests: %s", err)
-		}
+	return repos, nil
+}
 
-		var results SearchResults
-		err = json.Unmarshal(body, &results)
-		if err != nil {
-			return nil, fmt.Errorf("error mapping response into object: %s", err)
-		}
+func (gh ghHttpClient) GetActionRepos() (interface{}, error) {
 
-		name := strings.Split(repos[i], "/")[1]
-		name = strings.Split(name, "+")[0]
-
-		repoPulls[i] = RepoPullRequests{
-			RepositoryName: name,
-			PullRequests:   results.Items,
-		}
+	repos, err := GetActionRepos()
+	if err != nil {
+		return nil, err
 	}
 
-	return repoPulls, nil
+	return repos, nil
+}
+
+func (gh *ghHttpClient) GetPullRequests(repo string) (interface{}, error) {
+
+	query := url.Values{}
+	query.Add("state", "open")
+	org, err := GetOrg()
+	if err != nil {
+		return nil, fmt.Errorf("error getting org: %s", err)
+	}
+
+	filter := GetPRFilter()
+
+	url := fmt.Sprintf("repo:%s/%s+is:pr+is:open+%s", org, repo, filter)
+	body, err := gh.search(url)
+	if err != nil {
+		return nil, fmt.Errorf("error making request to get pull requests: %s", err)
+	}
+
+	var results SearchResults
+	err = json.Unmarshal(body, &results)
+	if err != nil {
+		return nil, fmt.Errorf("error mapping response into object: %s", err)
+	}
+
+	return results, nil
 }
 
 func (gh *ghHttpClient) GetReviews(repo string, prNumber string) (interface{}, error) {
@@ -57,12 +68,8 @@ func (gh *ghHttpClient) GetReviews(repo string, prNumber string) (interface{}, e
 	return reviews, nil
 }
 
-func (gh *ghHttpClient) GetActions() (interface{}, error) {
+func (gh *ghHttpClient) GetActions(repo string) (interface{}, error) {
 
-	repos, err := GetActionRepos()
-	if err != nil {
-		return nil, err
-	}
 	filter := GetActionFilter()
 	if filter != "" {
 		filter = fmt.Sprintf("/workflows/%s.yml", filter)
@@ -70,23 +77,17 @@ func (gh *ghHttpClient) GetActions() (interface{}, error) {
 	query := url.Values{}
 	query.Add("per_page", "1")
 
-	runs := make([]Runs, 0)
-	for _, repo := range repos {
-		body, err := gh.request(fmt.Sprintf("%s/actions%s/runs", repo, filter), query)
-		if err != nil {
-			return nil, fmt.Errorf("error making request to get runs: %s", err)
-		}
-
-		var repoRun Runs
-		err = json.Unmarshal(body, &repoRun)
-		if err != nil {
-			return nil, fmt.Errorf("error mapping response into object: %s", err)
-		}
-		repoRun.RepositoryName = strings.Split(repo, "/")[1]
-		runs = append(runs, repoRun)
+	body, err := gh.request(fmt.Sprintf("%s/actions%s/runs", repo, filter), query)
+	if err != nil {
+		return nil, fmt.Errorf("error making request to get runs: %s", err)
 	}
 
-	return runs, nil
+	var repoRun Runs
+	err = json.Unmarshal(body, &repoRun)
+	if err != nil {
+		return nil, fmt.Errorf("error mapping response into object: %s", err)
+	}
+	return repoRun, nil
 }
 
 func (gh *ghHttpClient) GetJobs(repo string, runId string) (interface{}, error) {

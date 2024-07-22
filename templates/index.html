@@ -18,21 +18,15 @@
     <main class="flex-1 p-10">
         <h1 class="text-4xl font-bold text-center mb-10">Github Monitor</h1>
         <div id="content" class="grid grid-cols-2 gap-4">
-            <div class="bg-gray-800 p-5 rounded-lg shadow-lg glow relative">
-                <h3 class="text-xl font-bold mb-4">Pull Requests</h3>
-                <div hx-get="/pull-requests" hx-trigger="load, every 21s" hx-swap="innerHTML" hx-indicator="#loading-pulls">
-                </div>
-                <div id="loading-pulls" class="htmx-indicator absolute z-10 top-0 left-0 right-0 bottom-0 justify-center items-center bg-gray-800 bg-opacity-50"> 
-                    <div class="spinner"></div>
+              <div class="bg-gray-800 p-5 rounded-lg shadow-lg glow relative">
+                <h3 class="text-xl font-bold mb-4">Actions</h3>
+                <div hx-get="/pull-requests" hx-trigger="load" hx-swap="outerHTML">
                 </div>
             </div>
 
             <div class="bg-gray-800 p-5 rounded-lg shadow-lg glow relative">
                 <h3 class="text-xl font-bold mb-4">Actions</h3>
-                <div hx-get="/actions" hx-trigger="load, every 55s" hx-swap="innerHTML" hx-indicator="#loading-actions">
-                </div>
-                <div id="loading-actions" class="htmx-indicator absolute z-10 top-0 left-0 right-0 bottom-0 justify-center items-center bg-gray-800 bg-opacity-50">
-                    <div class="spinner"></div>
+                <div hx-get="/actions" hx-trigger="load" hx-swap="outerHTML">
                 </div>
             </div>
         </div>

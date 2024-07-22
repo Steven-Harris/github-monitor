@@ -167,11 +167,6 @@ type PullRequest struct {
 	ActiveLockReason   any             `json:"active_lock_reason"`
 }
 
-type RepoPullRequests struct {
-	RepositoryName string
-	PullRequests   []SearchItem
-}
-
 type SearchItem struct {
 	URL           string     `json:"url"`
 	RepositoryURL string     `json:"repository_url"`
